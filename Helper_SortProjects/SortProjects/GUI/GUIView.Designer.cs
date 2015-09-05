@@ -25,6 +25,9 @@
         private void InitializeComponent() {
             this.splitContainer_main = new System.Windows.Forms.SplitContainer();
             this.groupBox_lists = new System.Windows.Forms.GroupBox();
+            this.b_main_reset = new System.Windows.Forms.Button();
+            this.b_main_load = new System.Windows.Forms.Button();
+            this.b_main_save = new System.Windows.Forms.Button();
             this.splitContainer_lists = new System.Windows.Forms.SplitContainer();
             this.listBox_projects = new System.Windows.Forms.ListBox();
             this.listBox_categories = new System.Windows.Forms.ListBox();
@@ -45,9 +48,6 @@
             this.b_editCategory_delete = new System.Windows.Forms.Button();
             this.b_editCategory_save = new System.Windows.Forms.Button();
             this.b_editCategory_add = new System.Windows.Forms.Button();
-            this.b_main_save = new System.Windows.Forms.Button();
-            this.b_main_load = new System.Windows.Forms.Button();
-            this.b_main_reset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer_main)).BeginInit();
             this.splitContainer_main.Panel1.SuspendLayout();
             this.splitContainer_main.Panel2.SuspendLayout();
@@ -92,6 +92,36 @@
             this.groupBox_lists.TabIndex = 0;
             this.groupBox_lists.TabStop = false;
             this.groupBox_lists.Text = "Lists";
+            // 
+            // b_main_reset
+            // 
+            this.b_main_reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.b_main_reset.Location = new System.Drawing.Point(174, 408);
+            this.b_main_reset.Name = "b_main_reset";
+            this.b_main_reset.Size = new System.Drawing.Size(75, 23);
+            this.b_main_reset.TabIndex = 5;
+            this.b_main_reset.Text = "Reset";
+            this.b_main_reset.UseVisualStyleBackColor = true;
+            // 
+            // b_main_load
+            // 
+            this.b_main_load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.b_main_load.Location = new System.Drawing.Point(93, 408);
+            this.b_main_load.Name = "b_main_load";
+            this.b_main_load.Size = new System.Drawing.Size(75, 23);
+            this.b_main_load.TabIndex = 4;
+            this.b_main_load.Text = "Load";
+            this.b_main_load.UseVisualStyleBackColor = true;
+            // 
+            // b_main_save
+            // 
+            this.b_main_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.b_main_save.Location = new System.Drawing.Point(12, 408);
+            this.b_main_save.Name = "b_main_save";
+            this.b_main_save.Size = new System.Drawing.Size(75, 23);
+            this.b_main_save.TabIndex = 3;
+            this.b_main_save.Text = "Save";
+            this.b_main_save.UseVisualStyleBackColor = true;
             // 
             // splitContainer_lists
             // 
@@ -188,17 +218,17 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox_editProject_projectCategories.FormattingEnabled = true;
-            this.listBox_editProject_projectCategories.Location = new System.Drawing.Point(3, 52);
+            this.listBox_editProject_projectCategories.Location = new System.Drawing.Point(3, 65);
             this.listBox_editProject_projectCategories.Name = "listBox_editProject_projectCategories";
             this.listBox_editProject_projectCategories.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
-            this.listBox_editProject_projectCategories.Size = new System.Drawing.Size(617, 316);
+            this.listBox_editProject_projectCategories.Size = new System.Drawing.Size(617, 303);
             this.listBox_editProject_projectCategories.TabIndex = 7;
             // 
             // checkBox_editProject_finished
             // 
             this.checkBox_editProject_finished.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox_editProject_finished.AutoSize = true;
-            this.checkBox_editProject_finished.Location = new System.Drawing.Point(555, 31);
+            this.checkBox_editProject_finished.Location = new System.Drawing.Point(555, 7);
             this.checkBox_editProject_finished.Name = "checkBox_editProject_finished";
             this.checkBox_editProject_finished.Size = new System.Drawing.Size(65, 17);
             this.checkBox_editProject_finished.TabIndex = 6;
@@ -208,7 +238,7 @@
             // b_editProject_projectPath
             // 
             this.b_editProject_projectPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.b_editProject_projectPath.Location = new System.Drawing.Point(471, 27);
+            this.b_editProject_projectPath.Location = new System.Drawing.Point(523, 3);
             this.b_editProject_projectPath.Name = "b_editProject_projectPath";
             this.b_editProject_projectPath.Size = new System.Drawing.Size(26, 23);
             this.b_editProject_projectPath.TabIndex = 5;
@@ -219,9 +249,9 @@
             // 
             this.tb_editProject_projectPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_editProject_projectPath.Location = new System.Drawing.Point(3, 29);
+            this.tb_editProject_projectPath.Location = new System.Drawing.Point(3, 5);
             this.tb_editProject_projectPath.Name = "tb_editProject_projectPath";
-            this.tb_editProject_projectPath.Size = new System.Drawing.Size(462, 20);
+            this.tb_editProject_projectPath.Size = new System.Drawing.Size(514, 20);
             this.tb_editProject_projectPath.TabIndex = 4;
             this.tb_editProject_projectPath.Text = "Project Path";
             // 
@@ -229,7 +259,7 @@
             // 
             this.tb_editProject_projectName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_editProject_projectName.Location = new System.Drawing.Point(3, 3);
+            this.tb_editProject_projectName.Location = new System.Drawing.Point(3, 31);
             this.tb_editProject_projectName.Name = "tb_editProject_projectName";
             this.tb_editProject_projectName.Size = new System.Drawing.Size(617, 20);
             this.tb_editProject_projectName.TabIndex = 3;
@@ -317,36 +347,6 @@
             this.b_editCategory_add.TabIndex = 3;
             this.b_editCategory_add.Text = "Add Category";
             this.b_editCategory_add.UseVisualStyleBackColor = true;
-            // 
-            // b_main_save
-            // 
-            this.b_main_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.b_main_save.Location = new System.Drawing.Point(12, 408);
-            this.b_main_save.Name = "b_main_save";
-            this.b_main_save.Size = new System.Drawing.Size(75, 23);
-            this.b_main_save.TabIndex = 3;
-            this.b_main_save.Text = "Save";
-            this.b_main_save.UseVisualStyleBackColor = true;
-            // 
-            // b_main_load
-            // 
-            this.b_main_load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.b_main_load.Location = new System.Drawing.Point(93, 408);
-            this.b_main_load.Name = "b_main_load";
-            this.b_main_load.Size = new System.Drawing.Size(75, 23);
-            this.b_main_load.TabIndex = 4;
-            this.b_main_load.Text = "Load";
-            this.b_main_load.UseVisualStyleBackColor = true;
-            // 
-            // b_main_reset
-            // 
-            this.b_main_reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.b_main_reset.Location = new System.Drawing.Point(174, 408);
-            this.b_main_reset.Name = "b_main_reset";
-            this.b_main_reset.Size = new System.Drawing.Size(75, 23);
-            this.b_main_reset.TabIndex = 5;
-            this.b_main_reset.Text = "Reset";
-            this.b_main_reset.UseVisualStyleBackColor = true;
             // 
             // GUIView
             // 

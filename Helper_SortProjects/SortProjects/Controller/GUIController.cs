@@ -7,9 +7,7 @@
 //     Twitter: https://twitter.com/NeedDragon
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Windows.Forms;
 using Helper_SortProjects.SortProjects.GUI;
 using Helper_SortProjects.SortProjects.Models;
@@ -21,7 +19,7 @@ namespace Helper_SortProjects.SortProjects.Controller {
             get { return _model; }
             set {
                 _model = value;
-                View.UpdateAll(Model);
+                if(View!=null) View.UpdateAll(Model);
             }
         }
 
@@ -30,92 +28,145 @@ namespace Helper_SortProjects.SortProjects.Controller {
         public Serializer Serializer { get; private set; }
 
         public GUIController(GUIView view) {
-            View = view;
+            Serializer = new Serializer(this);
             Model = Serializer.Deserialize();
-            if (Model == null) {
-                Model = new GUIModel();
-                InitModel();
+            if (Model == null) Model = new GUIModel();
+
+            View = view;
+            View.UpdateAll(Model);
+        }
+
+        public void ButtonPress(object sender, EventArgs e) { //TODO: Split into multiple functions
+            Button b = (Button) sender;
+            String name = b.Name;
+
+            if(name.Contains("editProject")) {
+                EditProject(name);
+            } else if (name.Contains("editCategory")) {
+                EditCategory(name);
             }
 
             View.UpdateAll(Model);
-
-            Serializer = new Serializer(this);
         }
 
-        private void InitModel() {
-            Model.CurrentProjectName = "Project Name";
-            Model.CurrentProjectPath = "Project Path";
-            Model.CurrentCategoryName = "Category Name";
+        private void EditCategory(string name) {
+            ProjectCategory cat = new ProjectCategory(View.GetCategoryName());
+            if (Model.CurrentSelectedCategory != null) cat = new ProjectCategory(Model.CurrentSelectedCategory.CategoryName);
+
+            if (name.Contains("add")) {
+                if (Model.AllCategories.Contains(cat)) {
+                    MessageBox.Show("Equal category already exists!");
+                    return;
+                }
+                Model.AllCategories.Add(cat);
+            } else if (name.Contains("save")) {
+                if (Model.AllCategories.Contains(cat)) {
+                    MessageBox.Show("Equal category already exists!");
+                    return;
+                }
+                Model.AllCategories[Model.CurrentSelectedCategoryIndex] = cat;
+            } else if (name.Contains("delete")) {
+                if (!Model.AllCategories.Contains(cat)) return;
+                Model.AllCategories.Remove(Model.CurrentSelectedCategory);
+                Model.CurrentSelectedCategory = null;
+            }
         }
 
-        public void ButtonPress(object sender, EventArgs e) {
-            Button b = (Button) sender;
-            String name = b.Name;
-            Boolean foundAction = true;
+        private void EditProject(string name) {
+            if (Model.CurrentProject == null) Model.CurrentProject = Model.LastSelectedObject;
 
-            if (name.Contains("editProject")) {
-                Project newProject = new Project(Model.CurrentProjectName, Model.CurrentProjectPath, Model.CurrentProjectFinished, Model.CurrentProjectCategories);
+            if (name.Contains("addProject")) {
+                if (Model.AllProjects.Contains(Model.CurrentProject)) {
+                    MessageBox.Show("Equal project already exists!");
+                    return;
+                }
+                Model.AllProjects.Add(new Project(Model.CurrentProject));
 
-                if(name.Contains("addProject")) {
-                    if(Model.AllProjects.Contains(newProject)) return;
-                    Model.AllProjects.Add(newProject); 
-                    View.UpdateProjectList(Model);
-                }  else if (name.Contains("saveProject")) {
-                    if (Model.AllProjects.Contains(newProject)) return;
-                    Model.AllProjects[Model.CurrentSelectedProjectIndex] = newProject; 
-                    View.UpdateProjectList(Model); 
-                } else if(name.Contains("deleteProject")) {
-                    if(Model.CurrentSelectedProject == null) return;
-                    if(!Model.AllProjects.Contains(Model.CurrentSelectedProject)) return;
-                    Model.AllProjects.Remove(Model.CurrentSelectedProject);
-                    View.UpdateProjectList(Model);
+            } else if (name.Contains("saveProject")) {
+                Project currentProject = Model.CurrentProject;
+                if(Model.CurrentSelectedProjectIndex == -1) return;
 
-                } else if(name.Contains("addCategory")) { //TODO: Add/Remove category adds/removes cat to/from ALL projects!
-                    if (Model.CurrentSelectedCategory == null) return;
-                    Model.CurrentSelectedProject.ProjectCategories.Add(Model.CurrentSelectedCategory);
-                    View.UpdateProjectCategoryList(Model);
-                } else if(name.Contains("removeCategory")) {
-                    if(Model.CurrentSelectedProjectCategory == null) return;
-                    if(!Model.CurrentSelectedProject.ProjectCategories.Contains(Model.CurrentSelectedProjectCategory)) return;
-                    Model.CurrentSelectedProject.ProjectCategories.Remove(Model.CurrentSelectedProjectCategory);
-                    View.UpdateProjectCategoryList(Model);
+                foreach (Project itProject in Model.AllProjects) {
+                    if (itProject.Equals(currentProject) && !ReferenceEquals(itProject, currentProject)) {
+                        MessageBox.Show("Equal project already exists!");
+                        return;
+                    }
                 }
 
-                else if (name.Contains("projectPath")) {
-                    FolderBrowserDialog dig = new FolderBrowserDialog();
-                    dig.Description = "Select the project you want to add";
-                    if (dig.ShowDialog() == DialogResult.OK) Model.CurrentProjectPath = dig.SelectedPath;
-                }
-                else foundAction = false;
+                Model.AllProjects[Model.CurrentSelectedProjectIndex] = currentProject;
+                Model.LastSelectedObject = currentProject;
+                Model.CurrentProject = null;
 
-            } else if (name.Contains("editCategory")) {
-                ProjectCategory cat = new ProjectCategory(Model.CurrentCategoryName);
-                if (name.Contains("add")) {
-                    if (Model.AllCategories.Contains(cat)) return;
-                    Model.AllCategories.Add(cat);
-                } else if(name.Contains("save")) {
-                    if(Model.AllCategories.Contains(cat)) return;
-                    Model.AllCategories[Model.CurrentSelectedCategoryIndex] = cat;
-                } else if(name.Contains("delete")) {
-                    if(!Model.AllCategories.Contains(cat)) return;
-                    Model.AllCategories.Remove(Model.CurrentSelectedCategory);
-                } else foundAction = false;
-                View.UpdateCategoryList(Model);
+            } else if (name.Contains("deleteProject")) {
+                if(Model.CurrentProject == null) { return; }
+                if(!Model.AllProjects.Contains(Model.CurrentProject)) return;
+                Model.AllProjects.Remove(Model.CurrentProject);
 
-            } else foundAction = false;
+            } else if (name.Contains("addCategory")) {
+                if(Model.CurrentSelectedCategory == null) return;
+                if(Model.CurrentProject == null) return;
+                if(Model.CurrentProject.ProjectCategories.Contains(Model.CurrentSelectedCategory)) return;
+                if(Model.CurrentSelectedProjectIndex == -1) return;
+                Model.CurrentProject.ProjectCategories.Add(Model.CurrentSelectedCategory);
+                Model.AllProjects[Model.CurrentSelectedProjectIndex] = Model.CurrentProject;
 
-            if(!foundAction) Debug.WriteLine("Warning: Could not find action for button: "+name);
+            } else if (name.Contains("removeCategory")) {
+                if(Model.CurrentSelectedProjectCategory == null) return;
+                if(Model.CurrentProject == null) return;
+                if(!Model.CurrentProject.ProjectCategories.Contains(Model.CurrentSelectedProjectCategory)) return;
+                Model.CurrentProject.ProjectCategories.Remove(Model.CurrentSelectedProjectCategory);
+                Model.AllProjects[Model.CurrentSelectedProjectIndex] = Model.CurrentProject;
 
-            View.UpdateEdits(Model);
+            } else if (name.Contains("projectPath")) {
+                FolderBrowserDialog dialog = new FolderBrowserDialog();
+                dialog.Description = "Select the project you want to add";
+                if (dialog.ShowDialog() == DialogResult.OK) Model.CurrentProject.ProjectPath = dialog.SelectedPath;
+            }
+        }
+
+        public void SelectedListEntryChanged(object sender, EventArgs e) {
+            ListBox listBox = (ListBox) sender;
+            String name = listBox.Name;
+            int selectedIndex = listBox.SelectedIndex;
+
+            if(name.Equals("listBox_projects")) {
+                Model.CurrentSelectedProjectIndex = selectedIndex;
+                if(selectedIndex == -1) return;
+
+                Project selectedProject = new Project(Model.AllProjects[selectedIndex]);
+                Model.CurrentProject = selectedProject;
+                Model.LastSelectedObject = selectedProject;
+                View.UpdateProjectCategoryList(Model);
+
+            } else if(name.Equals("listBox_categories")) {
+                Model.CurrentSelectedCategoryIndex = selectedIndex;
+                if (selectedIndex == -1) return;
+
+                ProjectCategory selectedCategory = Model.AllCategories[selectedIndex];
+                Model.CurrentSelectedCategory = selectedCategory;
+
+            } else if(name.Equals("listBox_editProject_projectCategories")) {
+                Model.CurrentSelectedProjectCategoryIndex = selectedIndex;
+                if(selectedIndex == -1) return;
+
+                Model.CurrentSelectedProjectCategory = Model.CurrentProject.ProjectCategories[selectedIndex];
+
+            } else Debug.WriteLine("Warning: Could not find action for listbox: " + name);
+
+            View.UpdateEdits(Model); 
         }
 
         public void CheckBoxChecked(object sender, EventArgs e) {
-            CheckBox cbox = (CheckBox) sender;
+            CheckBox cbox = (CheckBox)sender;
             String name = cbox.Name;
             Boolean foundAction = true;
 
             if(name.Contains("editProject")) {
-                if (name.Contains("finished")) Model.CurrentProjectFinished = cbox.Checked;
+                Project projectToChange = Model.CurrentProject;
+                if(projectToChange == null) projectToChange = Model.LastSelectedObject;
+                if(projectToChange == null) return;
+
+                if(name.Contains("finished")) projectToChange.Finished = cbox.Checked;
             } else foundAction = false;
 
             if(!foundAction) Debug.WriteLine("Warning: Could not find action for checkbox: "+name);
@@ -124,17 +175,22 @@ namespace Helper_SortProjects.SortProjects.Controller {
         }
 
         public void TextBoxTextChanged(object sender, EventArgs e) {
-            TextBox tb = (TextBox) sender;
+            TextBox tb = (TextBox)sender;
             String name = tb.Name;
             Boolean foundAction = true;
+            
+            if(name.Contains("editProject")) {
+                Project projectToChange = Model.CurrentProject;
+                if(projectToChange == null) projectToChange = Model.LastSelectedObject;
+                if(projectToChange == null) return;
 
-            if (name.Contains("editProject")) {
-                if (name.Contains("projectName")) Model.CurrentProjectName = tb.Text;
-                else if (name.Contains("projectPath")) Model.CurrentProjectPath = tb.Text;
+                if(name.Contains("projectName")) projectToChange.ProjectName = tb.Text;
+                else if(name.Contains("projectPath")) projectToChange.ProjectPath = tb.Text;
                 else foundAction = false;
 
-            } else if (name.Contains("editCategory")) {
-                if (name.Contains("categoryName")) Model.CurrentCategoryName = tb.Text;
+            } else if(name.Contains("editCategory")) {
+                if(Model.CurrentSelectedCategory==null) Model.CurrentSelectedCategory = new ProjectCategory(tb.Text);
+                if(name.Contains("categoryName")) Model.CurrentSelectedCategory.CategoryName = tb.Text;
                 else foundAction = false;
 
             } else foundAction = false;
@@ -142,38 +198,6 @@ namespace Helper_SortProjects.SortProjects.Controller {
             if(!foundAction) Debug.WriteLine("Warning: Could not find action for textbox: "+name);
 
             View.UpdateEdits(Model);
-        }
-
-        public void SelectedListEntryChanged(object sender, EventArgs e) {
-            ListBox listBox = (ListBox) sender;
-            String name = listBox.Name;
-            int selectedIndex = listBox.SelectedIndex;
-
-            if (name.Equals("listBox_projects")) {
-                Model.CurrentSelectedProjectIndex = selectedIndex;
-                Project selectedProject = Model.AllProjects[selectedIndex];
-                Model.CurrentProjectName = selectedProject.ProjectName;
-                Model.CurrentProjectPath = selectedProject.ProjectPath;
-                Model.CurrentProjectFinished = selectedProject.Finished;
-                Model.CurrentProjectCategories = selectedProject.ProjectCategories;
-                Model.CurrentSelectedProject = selectedProject;
-                if(!View.UpdatingList) View.UpdateProjectList(Model); //Prevent infinite loop
-
-            } else if (name.Equals("listBox_categories")) {
-                Model.CurrentSelectedCategoryIndex = selectedIndex;
-                ProjectCategory selectedCategory = Model.AllCategories[selectedIndex];
-                Model.CurrentCategoryName = selectedCategory.CategoryName;
-                Model.CurrentSelectedCategory = selectedCategory;
-                if(!View.UpdatingList) View.UpdateCategoryList(Model); //Prevent infinite loop
-
-            } else if (name.Equals("listBox_editProject_projectCategories")) {
-                Model.CurrentSelectedProjectCategoryIndex = selectedIndex;
-                Model.CurrentSelectedProjectCategory = Model.CurrentProjectCategories[selectedIndex];
-                if(!View.UpdatingList) View.UpdateProjectCategoryList(Model); //Prevent infinite loop
-
-            } else Debug.WriteLine("Warning: Could not find action for listbox: " + name);
-
-            if(!View.UpdatingList) View.UpdateEdits(Model); //Prevent infinite loop
         }
     }
 }

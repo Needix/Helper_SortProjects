@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace Helper_SortProjects.SortProjects.Models {
@@ -22,12 +23,42 @@ namespace Helper_SortProjects.SortProjects.Models {
         [XmlArrayItem("ProjectCategoryObject")]
         public List<ProjectCategory> ProjectCategories { get; set; }
 
-        public Project() { }
-        public Project(String name, String path, Boolean fin, List<ProjectCategory> cats) {
+        /// <summary>
+        /// Parameterless constructor for serialization
+        /// </summary>
+        public Project() : this("Project Name") {}
+        /// <summary>
+        /// Creates a project with optional parameters
+        /// </summary>
+        /// <param name="name">The name of the project</param>
+        /// <param name="path">The path to the project</param>
+        /// <param name="finished">true, if project is finished, else false</param>
+        public Project(String name, String path = "Project Path", Boolean finished = false) : this(name, path, finished, new List<ProjectCategory>()) {}
+        /// <summary>
+        /// Creates a project with all necesarry data
+        /// </summary>
+        /// <param name="name">The name of the project</param>
+        /// <param name="path">The path to the project</param>
+        /// <param name="finished">true, if project is already finished, else false</param>
+        /// <param name="cats">A list of project categories this project has</param>
+        public Project(String name, String path, Boolean finished, List<ProjectCategory> cats) {
             ProjectPath = path;
             ProjectName = name;
-            Finished = fin;
+            Finished = finished;
             ProjectCategories = cats;
+        }
+        /// <summary>
+        /// Copy constructor, copies prevProjects data and creates a new Project with this data
+        /// </summary>
+        /// <param name="prevProject">The Project to copy</param>
+        public Project(Project prevProject) {
+            ProjectName = prevProject.ProjectName;
+            ProjectPath = prevProject.ProjectPath;
+            Finished = prevProject.Finished;
+            List<ProjectCategory> oldList = prevProject.ProjectCategories;
+            ProjectCategory[] cats = new ProjectCategory[oldList.Count];
+            oldList.CopyTo(cats);
+            ProjectCategories = cats.ToList();
         }
 
         public override bool Equals(object obj) {
@@ -37,11 +68,7 @@ namespace Helper_SortProjects.SortProjects.Models {
             Project newObj = obj as Project;
             if(newObj == null) return false;
 
-            return newObj.ProjectName == this.ProjectName &&
-                newObj.ProjectPath == this.ProjectPath &&
-                newObj.Finished == this.Finished &&
-                newObj.ProjectCategories == this.ProjectCategories
-            ;
+            return newObj.ProjectName == this.ProjectName && newObj.ProjectPath == this.ProjectPath;
         }
 
         public override string ToString() {

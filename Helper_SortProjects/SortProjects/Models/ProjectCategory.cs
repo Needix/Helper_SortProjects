@@ -15,7 +15,10 @@ namespace Helper_SortProjects.SortProjects.Models {
     public class ProjectCategory {
         public String CategoryName { get; set; }
 
-        public ProjectCategory() { }
+        /// <summary>
+        /// Parameterless constructor for serialization
+        /// </summary>
+        public ProjectCategory() { CategoryName = "Category Name"; }
         public ProjectCategory(String name) {
             CategoryName = name;
         }

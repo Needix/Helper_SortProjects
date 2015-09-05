@@ -26,11 +26,10 @@ namespace Helper_SortProjects.SortProjects.Controller {
             Serialize(_controller.Model);
         }
 
-        public bool Load(object sender, EventArgs e) {
+        public void Load(object sender, EventArgs e) {
             GUIModel loadedModel = Deserialize();
-            if (loadedModel == null) return false;
+            if (loadedModel == null) return ;
             _controller.Model = loadedModel;
-            return true;
         }
 
         public void Reset(object sender, EventArgs e) {
@@ -42,9 +41,9 @@ namespace Helper_SortProjects.SortProjects.Controller {
         /// </summary>
         /// <param name="model">The model to serialize</param>
         public void Serialize(GUIModel model) {
-            XmlSerializer serializer = new XmlSerializer(typeof(GUIModel));
-
             if(File.Exists(SAVE_PATH)) File.Delete(SAVE_PATH);
+
+            XmlSerializer serializer = new XmlSerializer(typeof(GUIModel));
             FileStream stream = new FileStream(SAVE_PATH, FileMode.Create);
 
             serializer.Serialize(stream, model);
@@ -55,14 +54,14 @@ namespace Helper_SortProjects.SortProjects.Controller {
         /// </summary>
         /// <returns>The loaded model, or null if loading failed</returns>
         public GUIModel Deserialize() {
-            try {
-                XmlSerializer serializer = new XmlSerializer(typeof (GUIModel));
-                if(!File.Exists(SAVE_PATH)) return null;
-                FileStream fs = new FileStream(SAVE_PATH, FileMode.Open);
-                GUIModel obj = (GUIModel) serializer.Deserialize(fs);
-                fs.Close();
-                return obj;
-            } catch (Exception) { return null; }
+            if(!File.Exists(SAVE_PATH)) return null;
+
+            XmlSerializer serializer = new XmlSerializer(typeof (GUIModel));
+            FileStream fs = new FileStream(SAVE_PATH, FileMode.Open);
+
+            GUIModel obj = (GUIModel) serializer.Deserialize(fs);
+            fs.Close();
+            return obj;
         }
     }
 }

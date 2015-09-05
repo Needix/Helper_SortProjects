@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Helper_SortProjects.SortProjects.Controller;
 using Helper_SortProjects.SortProjects.Models;
@@ -14,12 +8,11 @@ namespace Helper_SortProjects.SortProjects.GUI {
     public partial class GUIView :Form {
         private GUIController _controller;
 
-        public Boolean UpdatingList { get; private set; }
-
         public GUIView() {
             InitializeComponent();
         }
 
+        //BIGTODO: Replace project ListBox with "real" sort option (ListView with collapse/expand option?)
         public void AddListener(GUIController controller) {
             _controller = controller;
 
@@ -49,54 +42,47 @@ namespace Helper_SortProjects.SortProjects.GUI {
             tb_editProject_projectName.TextChanged += _controller.TextBoxTextChanged;
             tb_editProject_projectPath.TextChanged += _controller.TextBoxTextChanged;
             tb_editCategory_categoryName.TextChanged += _controller.TextBoxTextChanged;
+
+            this.Closing += OnClosing;
         }
 
         public void UpdateProjectList(GUIModel model) {
-            UpdatingList = true;
-
             int selectedIndex = listBox_projects.SelectedIndex;
             listBox_projects.Items.Clear();
 
             foreach (Project project in model.AllProjects) listBox_projects.Items.Add(project);
             if(selectedIndex<listBox_projects.Items.Count) listBox_projects.SelectedIndex = selectedIndex;
-
-            UpdatingList = false;
         }
 
         public void UpdateCategoryList(GUIModel model) {
-            UpdatingList = true;
-
             int selectedIndex = listBox_categories.SelectedIndex;
             listBox_categories.Items.Clear();
 
             foreach(ProjectCategory project in model.AllCategories) listBox_categories.Items.Add(project);
             if(selectedIndex<listBox_categories.Items.Count) listBox_categories.SelectedIndex = selectedIndex;
-
-            UpdatingList = false;
         }
 
         public void UpdateProjectCategoryList(GUIModel model) {
-            UpdatingList = true;
-
             int selectedIndex = listBox_editProject_projectCategories.SelectedIndex;
             listBox_editProject_projectCategories.Items.Clear();
 
-            foreach(ProjectCategory project in model.CurrentProjectCategories) listBox_editProject_projectCategories.Items.Add(project);
+            if(model.CurrentProject == null) return;
+            foreach(ProjectCategory project in model.CurrentProject.ProjectCategories) listBox_editProject_projectCategories.Items.Add(project);
             if(selectedIndex<listBox_editProject_projectCategories.Items.Count) listBox_editProject_projectCategories.SelectedIndex = selectedIndex;
-
-            UpdatingList = false;
         }
 
         public void UpdateEdits(GUIModel model) {
             //Project
-            tb_editProject_projectName.Text = model.CurrentProjectName;
-            tb_editProject_projectPath.Text = model.CurrentProjectPath;
+            if (model.CurrentProject == null) return;
+            tb_editProject_projectName.Text = model.CurrentProject.ProjectName;
+            tb_editProject_projectPath.Text = model.CurrentProject.ProjectPath;
 
-            checkBox_editProject_finished.Checked = model.CurrentProjectFinished;
+            checkBox_editProject_finished.Checked = model.CurrentProject.Finished;
 
 
             //Category
-            tb_editCategory_categoryName.Text = model.CurrentCategoryName;
+            if (model.CurrentSelectedCategory == null) return;
+            tb_editCategory_categoryName.Text = model.CurrentSelectedCategory.CategoryName;
         }
 
         public void UpdateAll(GUIModel model) {
@@ -104,6 +90,14 @@ namespace Helper_SortProjects.SortProjects.GUI {
             UpdateProjectCategoryList(model);
             UpdateCategoryList(model);
             UpdateProjectList(model);
+        }
+
+        private void OnClosing(object sender, EventArgs e) {
+            _controller.Serializer.Serialize(_controller.Model);
+        }
+
+        public String GetCategoryName() {
+            return tb_editCategory_categoryName.Text;
         }
     }
 }

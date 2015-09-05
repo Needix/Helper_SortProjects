@@ -22,27 +22,25 @@ namespace Helper_SortProjects.SortProjects.Models {
         [XmlArrayItem("CategoryObject")]
         public List<ProjectCategory> AllCategories { get; set; }
 
-        public String CurrentProjectName { get; set; }
-        public String CurrentProjectPath { get; set; }
-        public Boolean CurrentProjectFinished { get; set; }
-        [XmlArray("CurrentProjectCategories")]
-        [XmlArrayItem("ProjectCategoryObject")]
-        public List<ProjectCategory> CurrentProjectCategories { get; set; }
+        public Project CurrentProject { get; set; } 
+        public Project LastSelectedObject { get; set; }
+        public int CurrentSelectedProjectIndex { get; set; }
 
-        public Project CurrentSelectedProject { get; set; } //TODO: Make sure CurrentSelectedProject is really selectedProject (e.g. list was reset (no entry selected) but CurrentSelectedProject is still valid (should be null) 
-        public int CurrentSelectedProjectIndex { get; set; } //TODO: see above
-        public ProjectCategory CurrentSelectedProjectCategory { get; set; } //TODO: see above
-        public int CurrentSelectedProjectCategoryIndex { get; set; }//TODO: see above
+        public ProjectCategory CurrentSelectedProjectCategory { get; set; }
+        public int CurrentSelectedProjectCategoryIndex { get; set; }
 
-        public String CurrentCategoryName { get; set; }
-        public ProjectCategory CurrentSelectedCategory { get; set; }//TODO: see above
-        public int CurrentSelectedCategoryIndex { get; set; }//TODO: see above
+        public ProjectCategory CurrentSelectedCategory { get; set; }
+        public int CurrentSelectedCategoryIndex { get; set; }
 
 
         public GUIModel() {
             AllProjects = new List<Project>();
             AllCategories = new List<ProjectCategory>();
-            CurrentProjectCategories = new List<ProjectCategory>();
+
+            CurrentProject = new Project();
+            LastSelectedObject = CurrentProject;
+            CurrentSelectedProjectIndex = -1;
+            CurrentSelectedCategory  = new ProjectCategory("Category Name");
         }
 
         public Project GetProject(String name) {
