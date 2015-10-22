@@ -36,7 +36,7 @@ namespace Helper_SortProjects.SortProjects.Controller {
             View.UpdateAll(Model);
         }
 
-        public void ButtonPress(object sender, EventArgs e) { //TODO: Split into multiple functions
+        public void ButtonPress(object sender, EventArgs e) {
             Button b = (Button) sender;
             String name = b.Name;
 
